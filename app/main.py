@@ -34,6 +34,7 @@ def run_pipeline() -> None:
         logger.info("Prepared market data. Rows: %s", len(clean_data))
 
         save_to_postgres(clean_data)
+
         logger.info("Market data ETL pipeline finished successfully.")
 
     except Exception as exc:

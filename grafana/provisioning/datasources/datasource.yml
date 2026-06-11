@@ -1,0 +1,20 @@
+apiVersion: 1
+
+datasources:
+  - name: grafana-postgresql-datasource
+    uid: postgres_market_data
+    type: postgres
+    access: proxy
+    url: postgres:5432
+
+    user: postgres
+    secureJsonData:
+      password: kacper
+
+
+    jsonData:
+      database: market_data
+      sslmode: disable
+      postgresVersion: 1600
+
+    isDefault: true

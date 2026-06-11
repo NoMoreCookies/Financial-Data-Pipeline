@@ -9,9 +9,9 @@ REQUIRED_COLUMNS = ["Open", "High", "Low", "Close", "Volume"]
 
 
 def prepare_data(
-        data: pd.DataFrame,
-        tickers: Sequence[str]
-        ) -> pd.DataFrame:
+    data: pd.DataFrame,
+    tickers: Sequence[str],
+) -> pd.DataFrame:
     """Prepare raw market data downloaded from yfinance for database storage.
 
     Converts yfinance multi-ticker market data into a normalized long format:
@@ -23,11 +23,11 @@ def prepare_data(
         tickers: Sequence of ticker symbols to extract from the raw data.
 
     Returns:
-        A normalized pandas DataFrame ready to be saved to PostgreSQL.
+        A normalized and validated DataFrame ready for PostgreSQL.
 
     Raises:
-        ValueError: If input data is empty, tickers are missing, or required columns are absent.
-        RuntimeError: If data preparation fails unexpectedly.
+        ValueError: If input data is invalid.
+        RuntimeError: If transformation fails.
     """
     if data is None or data.empty:
         raise ValueError("Input market data is empty.")
@@ -38,14 +38,19 @@ def prepare_data(
     frames = []
 
     try:
+        logger.info("Starting transformation")
+        
         for ticker in tickers:
             if ticker not in data.columns.get_level_values(0):
-                raise ValueError(f"Ticker '{ticker}' not found in downloaded data.")
+                raise ValueError(
+                    f"Ticker '{ticker}' not found in downloaded data."
+                )
 
             ticker_df = data[ticker].copy()
 
             missing_columns = [
-                column for column in REQUIRED_COLUMNS
+                column
+                for column in REQUIRED_COLUMNS
                 if column not in ticker_df.columns
             ]
 
@@ -85,10 +90,76 @@ def prepare_data(
             ]
         ]
 
-        logger.info("Prepared %s rows of market data.", len(result))
+        # Timestamp normalization
+        result["timestamp"] = (
+            pd.to_datetime(
+                result["timestamp"],
+                utc=True,
+                errors="coerce",
+            )
+            .dt.tz_localize(None)
+        )
+
+        # Numeric conversion
+        numeric_columns = [
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+        ]
+
+        for column in numeric_columns:
+            result[column] = pd.to_numeric(
+                result[column],
+                errors="coerce",
+            )
+
+        rows_before = len(result)
+
+        # Remove null values
+        result = result.dropna(
+            subset=[
+                "timestamp",
+                "ticker",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+            ]
+        )
+
+        # Basic market data validation
+        result = result[result["volume"] >= 0]
+        result = result[result["high"] >= result["low"]]
+
+        # OHLC consistency validation
+        result = result[
+            (result["high"] >= result["open"])
+            & (result["high"] >= result["close"])
+            & (result["low"] <= result["open"])
+            & (result["low"] <= result["close"])
+        ]
+
+        result["volume"] = result["volume"].astype("int64")
+
+        rows_removed = rows_before - len(result)
+
+        logger.info(
+            "Validation removed %s invalid rows.",
+            rows_removed,
+        )
+
+        logger.info(
+            "Prepared %s rows of market data.",
+            len(result),
+        )
 
         return result
 
     except Exception as exc:
         logger.exception("Failed to prepare market data.")
-        raise RuntimeError("Failed to prepare market data.") from exc
+        raise RuntimeError(
+            "Failed to prepare market data."
+        ) from exc

@@ -8,7 +8,7 @@ from app.config import TICKERS
 logger = logging.getLogger(__name__)
 
 
-
+yf.set_tz_cache_location("/tmp/yfinance-cache")
 
 def download_market_data(\
         tickers: Sequence[str] = TICKERS,
@@ -35,6 +35,8 @@ def download_market_data(\
         raise ValueError("At least one ticker must be provided.")
 
     try:
+        logger.info("Downloading market data...")
+        
         data = yf.download(
             tickers=list(tickers),
             period=period,
