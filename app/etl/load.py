@@ -39,7 +39,7 @@ def save_to_postgres(
         ValueError: If the DataFrame is empty or missing required columns.
         RuntimeError: If saving data to PostgreSQL fails.
     """
-    required_columns = [
+    base_columns = [
         "timestamp",
         "ticker",
         "open",
@@ -48,6 +48,18 @@ def save_to_postgres(
         "close",
         "volume",
     ]
+
+    silver_columns = [
+        "return_5m",
+        "sma20",
+        "sma50",
+        "volatility20",
+    ]
+
+    if table_name == "market_prices_silver":
+        required_columns = base_columns + silver_columns
+    else:
+        required_columns = base_columns
 
     if df is None or df.empty:
         raise ValueError("Cannot save empty DataFrame to PostgreSQL.")
@@ -61,9 +73,19 @@ def save_to_postgres(
         raise ValueError(f"Missing required columns: {missing_columns}")
 
     try:
-        logger.info("Loading %d rows into PostgreSQL", len(df))
-        
+        logger.info(
+            "Loading %d rows into PostgreSQL table '%s'.",
+            len(df),
+            table_name,
+        )
+
         df_to_save = df[required_columns].copy()
+
+        df_to_save = df_to_save.where(
+            pd.notnull(df_to_save),
+            None,
+        )
+        
         records = df_to_save.to_dict(orient="records")
 
         if not records:
@@ -88,5 +110,8 @@ def save_to_postgres(
         )
 
     except Exception as exc:
-        logger.exception("Failed to save market data to PostgreSQL.")
+        logger.exception(
+            "Failed to save market data to PostgreSQL.",
+            table_name
+            )
         raise RuntimeError("Failed to save market data to PostgreSQL.") from exc

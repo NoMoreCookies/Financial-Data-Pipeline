@@ -1,0 +1,41 @@
+[2026-06-11T14:45:55.827+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2026-06-11T14:45:55.838+0000] {taskinstance.py:2614} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: market_data_pipeline.run_etl_pipeline scheduled__2026-06-11T14:40:00+00:00 [queued]>
+[2026-06-11T14:45:55.843+0000] {taskinstance.py:2614} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: market_data_pipeline.run_etl_pipeline scheduled__2026-06-11T14:40:00+00:00 [queued]>
+[2026-06-11T14:45:55.843+0000] {taskinstance.py:2867} INFO - Starting attempt 1 of 3
+[2026-06-11T14:45:55.850+0000] {taskinstance.py:2890} INFO - Executing <Task(BashOperator): run_etl_pipeline> on 2026-06-11 14:40:00+00:00
+[2026-06-11T14:45:55.855+0000] {standard_task_runner.py:104} INFO - Running: ['airflow', 'tasks', 'run', 'market_data_pipeline', 'run_etl_pipeline', 'scheduled__2026-06-11T14:40:00+00:00', '--job-id', '2', '--raw', '--subdir', 'DAGS_FOLDER/market)data_dag.py', '--cfg-path', '/tmp/tmppow0aw1f']
+[2026-06-11T14:45:55.856+0000] {standard_task_runner.py:105} INFO - Job 2: Subtask run_etl_pipeline
+[2026-06-11T14:45:55.858+0000] {logging_mixin.py:190} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/task/task_runner/standard_task_runner.py:70 DeprecationWarning: This process (pid=274) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2026-06-11T14:45:55.858+0000] {standard_task_runner.py:72} INFO - Started process 275 to run task
+[2026-06-11T14:45:55.887+0000] {task_command.py:467} INFO - Running <TaskInstance: market_data_pipeline.run_etl_pipeline scheduled__2026-06-11T14:40:00+00:00 [running]> on host 8e9e54ca9513
+[2026-06-11T14:45:55.936+0000] {taskinstance.py:3134} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='market_data_pipeline' AIRFLOW_CTX_TASK_ID='run_etl_pipeline' AIRFLOW_CTX_EXECUTION_DATE='2026-06-11T14:40:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2026-06-11T14:40:00+00:00'
+[2026-06-11T14:45:55.936+0000] {taskinstance.py:732} INFO - ::endgroup::
+[2026-06-11T14:45:55.965+0000] {subprocess.py:78} INFO - Tmp dir root location: /tmp
+[2026-06-11T14:45:55.966+0000] {subprocess.py:88} INFO - Running command: ['/usr/bin/bash', '-c', 'cd /opt/airflow/project && python -m app.main']
+[2026-06-11T14:45:55.971+0000] {subprocess.py:99} INFO - Output:
+[2026-06-11T14:45:56.953+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:56,953 | INFO | __main__ | Starting market data ETL pipeline.
+[2026-06-11T14:45:56.954+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:56,953 | INFO | app.etl.extract | Downloading market data...
+[2026-06-11T14:45:57.694+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,694 | ERROR | yfinance |
+[2026-06-11T14:45:57.694+0000] {subprocess.py:106} INFO - 1 Failed download:
+[2026-06-11T14:45:57.695+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,694 | ERROR | yfinance | ['NVDA']: OperationalError('database is locked')
+[2026-06-11T14:45:57.703+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,703 | INFO | __main__ | Downloaded raw market data.
+[2026-06-11T14:45:57.704+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,703 | INFO | app.etl.transform | Starting transformation
+[2026-06-11T14:45:57.710+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,710 | INFO | app.etl.transform | Validation removed 502 invalid rows.
+[2026-06-11T14:45:57.711+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,710 | INFO | app.etl.transform | Prepared 210 rows of market data.
+[2026-06-11T14:45:57.711+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,711 | INFO | __main__ | Prepared bronze market data. Rows: 210
+[2026-06-11T14:45:57.712+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,711 | INFO | app.etl.transform | Building Silver Layer features for 210 rows.
+[2026-06-11T14:45:57.718+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,717 | INFO | app.etl.transform | Silver Layer built successfully.
+[2026-06-11T14:45:57.718+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,718 | INFO | __main__ | Prepared silver market data. Rows: 210
+[2026-06-11T14:45:57.718+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,718 | INFO | app.etl.load | Loading 210 rows into PostgreSQL table 'market_prices'.
+[2026-06-11T14:45:57.753+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,753 | INFO | app.etl.load | Inserted 3 new rows into table 'market_prices'.
+[2026-06-11T14:45:57.753+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,753 | INFO | __main__ | Saved bronze market data. Rows: 210
+[2026-06-11T14:45:57.754+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,753 | INFO | app.etl.load | Loading 210 rows into PostgreSQL table 'market_prices_silver'.
+[2026-06-11T14:45:57.778+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,778 | INFO | app.etl.load | Inserted 3 new rows into table 'market_prices_silver'.
+[2026-06-11T14:45:57.779+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,779 | INFO | __main__ | Saved silver market data. Rows: 210
+[2026-06-11T14:45:57.779+0000] {subprocess.py:106} INFO - 2026-06-11 14:45:57,779 | INFO | __main__ | Market data ETL pipeline finished successfully.
+[2026-06-11T14:45:57.866+0000] {subprocess.py:110} INFO - Command exited with return code 0
+[2026-06-11T14:45:57.882+0000] {taskinstance.py:341} INFO - ::group::Post task execution logs
+[2026-06-11T14:45:57.882+0000] {taskinstance.py:353} INFO - Marking task as SUCCESS. dag_id=market_data_pipeline, task_id=run_etl_pipeline, run_id=scheduled__2026-06-11T14:40:00+00:00, execution_date=20260611T144000, start_date=20260611T144555, end_date=20260611T144557
+[2026-06-11T14:45:57.916+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2026-06-11T14:45:57.926+0000] {taskinstance.py:3901} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-06-11T14:45:57.927+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

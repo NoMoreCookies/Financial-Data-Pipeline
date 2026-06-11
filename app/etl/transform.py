@@ -39,7 +39,7 @@ def prepare_data(
 
     try:
         logger.info("Starting transformation")
-        
+
         for ticker in tickers:
             if ticker not in data.columns.get_level_values(0):
                 raise ValueError(
@@ -156,6 +156,8 @@ def prepare_data(
             len(result),
         )
 
+        result = result.sort_values(["ticker", "timestamp"])
+
         return result
 
     except Exception as exc:
@@ -163,3 +165,65 @@ def prepare_data(
         raise RuntimeError(
             "Failed to prepare market data."
         ) from exc
+
+def build_silver_layer(df: pd.DataFrame) -> pd.DataFrame:
+    """Build Silver Layer analytical features for market data.
+
+    Enriches validated market data with commonly used financial indicators
+    calculated independently for each ticker symbol.
+
+    Added features:
+        - return_5m: Percentage return relative to the previous observation.
+        - sma20: 20-period simple moving average of closing prices.
+        - sma50: 50-period simple moving average of closing prices.
+        - volatility20: Rolling 20-period standard deviation of returns.
+
+    Args:
+        df: Validated market data in normalized format containing at least
+            the following columns:
+            timestamp, ticker, close.
+
+    Returns:
+        A copy of the input DataFrame enriched with Silver Layer features.
+
+    Notes:
+        Data is sorted by ticker and timestamp before calculations to ensure
+        correct rolling-window and return computations.
+    """
+    logger.info(
+        "Building Silver Layer features for %s rows.",
+        len(df),
+    )
+
+    silver_df = (
+        df.sort_values(
+            ["ticker", "timestamp"]
+        )
+        .copy()
+    )
+
+    silver_df["return_5m"] = (
+        silver_df.groupby("ticker")["close"]
+        .pct_change()
+    )
+
+    silver_df["sma20"] = (
+        silver_df.groupby("ticker")["close"]
+        .transform(lambda x: x.rolling(20).mean())
+    )
+
+    silver_df["sma50"] = (
+        silver_df.groupby("ticker")["close"]
+        .transform(lambda x: x.rolling(50).mean())
+    )
+
+    silver_df["volatility20"] = (
+        silver_df.groupby("ticker")["return_5m"]
+        .transform(lambda x: x.rolling(20).std())
+    )
+
+    logger.info(
+        "Silver Layer built successfully."
+    )
+
+    return silver_df
