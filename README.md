@@ -55,7 +55,7 @@ sql/
 
 ## Setup
 ```bash
-git clone https://github.com/<username>/financial-market-data-pipeline.git
+git clone https://github.com/NoMooreCookies/financial-market-data-pipeline.git
 
 cd financial-market-data-pipeline
 

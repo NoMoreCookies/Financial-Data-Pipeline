@@ -1512,3 +1512,10 @@
 [2026-06-11T14:49:47.830+0000] {logging_mixin.py:190} INFO - [2026-06-11T14:49:47.829+0000] {dag.py:3239} INFO - Sync 1 DAGs
 [2026-06-11T14:49:47.846+0000] {logging_mixin.py:190} INFO - [2026-06-11T14:49:47.846+0000] {dag.py:4180} INFO - Setting next_dagrun for market_data_pipeline to 2026-06-11 14:45:00+00:00, run_after=2026-06-11 14:50:00+00:00
 [2026-06-11T14:49:47.858+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/market)data_dag.py took 0.059 seconds
+[2026-06-11T14:50:17.937+0000] {processor.py:186} INFO - Started process (PID=380) to work on /opt/airflow/dags/market)data_dag.py
+[2026-06-11T14:50:17.938+0000] {processor.py:914} INFO - Processing file /opt/airflow/dags/market)data_dag.py for tasks to queue
+[2026-06-11T14:50:17.939+0000] {logging_mixin.py:190} INFO - [2026-06-11T14:50:17.939+0000] {dagbag.py:588} INFO - Filling up the DagBag from /opt/airflow/dags/market)data_dag.py
+[2026-06-11T14:50:17.945+0000] {processor.py:925} INFO - DAG(s) 'market_data_pipeline' retrieved from /opt/airflow/dags/market)data_dag.py
+[2026-06-11T14:50:17.962+0000] {logging_mixin.py:190} INFO - [2026-06-11T14:50:17.962+0000] {dag.py:3239} INFO - Sync 1 DAGs
+[2026-06-11T14:50:17.977+0000] {logging_mixin.py:190} INFO - [2026-06-11T14:50:17.977+0000] {dag.py:4180} INFO - Setting next_dagrun for market_data_pipeline to 2026-06-11 14:50:00+00:00, run_after=2026-06-11 14:55:00+00:00
+[2026-06-11T14:50:17.987+0000] {processor.py:208} INFO - Processing /opt/airflow/dags/market)data_dag.py took 0.054 seconds
