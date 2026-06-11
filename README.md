@@ -91,7 +91,7 @@ Key features:
 
 ![Market Dashboard 1](images/photo1.png)
 
-### Asset Comparison
+### Technical Indicators
 
 ![Market Dashboard 2](images/photo2.png)
 
